@@ -1,0 +1,24 @@
+FROM ubuntu:20.04
+
+RUN apt update -y && apt upgrade -y
+RUN apt -y install software-properties-common nano
+
+RUN apt -y install apache2 libapache2-mod-fcgid composer && \
+a2enmod rewrite actions fcgid alias proxy_fcgi
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+COPY src/000-default.conf /etc/apache2/sites-available/000-default.conf
+
+RUN add-apt-repository ppa:ondrej/php && apt-get update && apt install -y php7.4 php7.4-cli php7.4-fpm php7.4-json php7.4-common php7.4-mysql php7.4-zip php7.4-gd php7.4-mbstring php7.4-curl php7.4-xml php-pear php7.4-bcmath
+
+RUN rm /var/www/html/index.html
+COPY src/info.php /var/www/html/info.php
+
+RUN apt-get install -y supervisor
+ADD src/supervisord.conf /etc/supervisor/conf.d/supervisord.conf 
+
+RUN mkdir /shared
+VOLUME /home/krzysztof/test:/shared
+
+EXPOSE 80
+
+ENTRYPOINT ["/usr/bin/supervisord"]
