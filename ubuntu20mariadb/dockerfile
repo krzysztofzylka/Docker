@@ -1,0 +1,17 @@
+FROM ubuntu:20.04
+
+RUN apt update -y
+
+RUN apt install -y mariadb-server
+COPY src/my.cnf /etc/mysql/my.cnf
+ADD src/init.sh /init.sh
+RUN chmod 755 /init.sh
+RUN service mysql start && \
+    mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'    IDENTIFIED BY 'root' WITH GRANT OPTION; FLUSH PRIVILEGES;"
+
+RUN apt install -y supervisor
+ADD src/supervisord.conf /etc/supervisor/conf.d/supervisord.conf 
+
+EXPOSE 3306
+
+ENTRYPOINT ["/usr/bin/supervisord"]
