@@ -1,0 +1,6 @@
+version: '3'
+services:
+  client:
+    image: krzysztofzylka/ubuntu20apache2php81:latest
+    volumes:
+      - client_path:/var/www/html:rw
