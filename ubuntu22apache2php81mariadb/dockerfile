@@ -2,6 +2,9 @@ FROM krzysztofzylka/ubuntu22apache2php81
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+#php
+COPY /src/php.ini /etc/php/8.1/apache2/php.ini
+
 #apache
 COPY src/000-default.conf /etc/apache2/sites-available/000-default.conf
 

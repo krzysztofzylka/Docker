@@ -1,0 +1,13 @@
+version: '3'
+services:
+  server:
+    image: 1:latest
+    volumes:
+      # - client_path:/var/www/html:rw
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "80:80"
+      - "3306:3306"
+
+volumes:
+  mysql-data:
