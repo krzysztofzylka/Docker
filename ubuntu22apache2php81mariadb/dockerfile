@@ -1,16 +1,25 @@
 FROM krzysztofzylka/ubuntu22apache2php81
 
+ARG DEBIAN_FRONTEND=noninteractive
+
+#apache
+COPY src/000-default.conf /etc/apache2/sites-available/000-default.conf
+
 #mariadb
 RUN apt install -y mariadb-server
 COPY src/my.cnf /etc/mysql/my.cnf
 ADD src/init.sh /init.sh
 RUN chmod 755 /init.sh
 RUN service mariadb start && \
-    mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'    IDENTIFIED BY 'root' WITH GRANT OPTION; FLUSH PRIVILEGES;"
+    mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION; CREATE USER 'user'@'%' IDENTIFIED BY 'user'; GRANT ALL PRIVILEGES ON *.* TO 'user'@'%'; FLUSH PRIVILEGES;"
 
 RUN apt install -y supervisor
 ADD src/supervisord.conf /etc/supervisor/conf.d/supervisord.conf 
 
-EXPOSE 3306 80
+RUN apt install -y phpmyadmin
+COPY src/phpmyadmin.inc.php /etc/phpmyadmin/config.inc.php
+
+EXPOSE 80
+EXPOSE 3306
 
 ENTRYPOINT ["/usr/bin/supervisord"]
