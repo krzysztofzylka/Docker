@@ -1,0 +1,26 @@
+FROM ubuntu:22.10
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV WEBROOT_PATH="/var/www/html"
+
+LABEL org.opencontainers.image.authors="krzysztofzylka@yahoo.com"
+
+RUN apt update -y && apt upgrade -y
+RUN apt -y install software-properties-common
+
+RUN apt -y install apache2 libapache2-mod-fcgid && \
+a2enmod rewrite actions fcgid alias proxy_fcgi
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+COPY src/000-default.conf /etc/apache2/sites-available/000-default.conf
+
+RUN apt-get update && apt install -y php8.1-cli php8.1-fpm php8.1-common php8.1-mysql php8.1-zip \
+    php8.1-gd php8.1-mbstring php8.1-curl php8.1-xml php-pear php8.1-bcmath php8.1-memcache \
+    php8.1-memcached php8.1-oauth php8.1-bz2 php8.1-soap php8.1-xdebug php8.1-xml
+
+COPY src/php/xdebug.ini /etc/php/8.1/mods-available/xdebug.ini
+
+ADD src/start.sh /start.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["bash", "/start.sh"]
