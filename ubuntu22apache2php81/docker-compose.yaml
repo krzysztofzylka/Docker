@@ -1,6 +1,8 @@
 version: '3'
 services:
   client:
+    environment:
+      WEBROOT_PATH: /var/www/html
     image: /.
     volumes:
       - client_path:/var/www/html:rw
