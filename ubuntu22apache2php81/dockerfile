@@ -3,10 +3,12 @@ FROM ubuntu:22.10
 ARG DEBIAN_FRONTEND=noninteractive
 ENV WEBROOT_PATH="/var/www/html"
 
-LABEL org.opencontainers.image.authors="krzysztofzylka@yahoo.com"
+LABEL name="krzysztofzylka/ubuntu22apache2php81"
+LABEL maintainer="krzysztofzylka@yahoo.com"
+LABEL build-date="2022-07-15"
 
 RUN apt update -y && apt upgrade -y
-RUN apt -y install software-properties-common
+RUN apt -y install software-properties-common iproute2
 
 RUN apt -y install apache2 libapache2-mod-fcgid && \
 a2enmod rewrite actions fcgid alias proxy_fcgi
@@ -19,6 +21,7 @@ RUN apt-get update && apt install -y php8.1-cli php8.1-fpm php8.1-common php8.1-
 
 COPY src/php/xdebug.ini /etc/php/8.1/mods-available/xdebug.ini
 
+ADD src/xdebug-init.sh /xdebug-init.sh
 ADD src/start.sh /start.sh
 
 EXPOSE 80
